@@ -15,20 +15,20 @@ use yii\di;
 class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 {
     /**
-     * @var array|string Need to configure web\Application with controller
+     * @var array|string|Evrotel\Yii\Web\Bootstrap Need to configure web\Application with controller
      * Set to null to skip configuring web\Application
      */
     public $web = [
-        'class' => Evrotel\Yii\Web\Controller::class,
+        'class' => Evrotel\Yii\Web\Bootstrap::class,
     ];
 
     /**
      * @see Evrotel\Yii\Console\Controller
-     * @var array|string Need to configure console\Application with controller
+     * @var array|string|Evrotel\Yii\Console\Bootstrap Need to configure console\Application with controller
      * Set to null to skip configuring console\Application
      */
     public $console = [
-        'class' => Evrotel\Yii\Console\Controller::class,
+        'class' => Evrotel\Yii\Console\Bootstrap::class,
     ];
 
     /**
