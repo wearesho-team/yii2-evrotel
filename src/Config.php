@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Wearesho\Evrotel\Yii;
 
+use Wearesho\Evrotel;
 use yii\base;
 
 /**
@@ -12,6 +13,8 @@ use yii\base;
  */
 class Config extends base\BaseObject implements ConfigInterface
 {
+    use Evrotel\ConfigTrait;
+
     /** @var int */
     public $channels = ConfigInterface::DEFAULT_CHANNELS;
 

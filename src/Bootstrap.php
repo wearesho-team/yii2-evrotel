@@ -66,5 +66,6 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
     public function configure(di\Container $container): void
     {
         $container->set(ConfigInterface::class, $this->config);
+        $container->set(Evrotel\ConfigInterface::class, $this->config);
     }
 }
