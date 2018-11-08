@@ -32,6 +32,7 @@ class Job extends base\BaseObject implements queue\JobInterface
         /** @var Evrotel\AutoDial\Worker $worker */
         $worker = di\Instance::ensure($this->worker, Evrotel\AutoDial\Worker::class);
 
-        $worker->push($request);
+        $response = $worker->push($request);
+        \Yii::info("Response: " . (string)$response->getBody(), static::class);
     }
 }
