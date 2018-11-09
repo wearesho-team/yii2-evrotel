@@ -20,6 +20,10 @@ class Job extends base\BaseObject implements queue\JobInterface
         'class' => Evrotel\AutoDial\Worker::class,
     ];
 
+    public $repository = [
+        'class' => Evrotel\AutoDial\MediaRepository::class,
+    ];
+
     /**
      * @param queue\Queue $queue
      * @throws \yii\base\InvalidConfigException
@@ -29,10 +33,18 @@ class Job extends base\BaseObject implements queue\JobInterface
     {
         /** @var Evrotel\AutoDial\RequestInterface $request */
         $request = di\Instance::ensure($this->request, Evrotel\AutoDial\RequestInterface::class);
+
+        /** @var Evrotel\AutoDial\MediaRepository $repository */
+        $repository = di\Instance::ensure($this->repository, Evrotel\AutoDial\MediaRepository::class);
+        $fileName = $repository->push($request->getFileName());
+        \YIi::info("Pushed $fileName", static::class);
+
         /** @var Evrotel\AutoDial\Worker $worker */
         $worker = di\Instance::ensure($this->worker, Evrotel\AutoDial\Worker::class);
 
-        $response = $worker->push($request);
+        $response = $worker->push(
+            new Evrotel\AutoDial\Request($request->getPhone(), $fileName)
+        );
         \Yii::info("Response: " . (string)$response->getBody(), static::class);
     }
 }
