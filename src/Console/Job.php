@@ -39,12 +39,8 @@ class Job extends base\BaseObject implements queue\JobInterface
         $fileName = $repository->push($request->getFileName());
         \YIi::info("Pushed $fileName", static::class);
 
-        /** @var Evrotel\AutoDial\Worker $worker */
-        $worker = di\Instance::ensure($this->worker, Evrotel\AutoDial\Worker::class);
-
-        $response = $worker->push(
-            new Evrotel\AutoDial\Request($request->getPhone(), $fileName)
-        );
-        \Yii::info("Response: " . (string)$response->getBody(), static::class);
+        $queue
+            ->delay(10)
+            ->push(new DialJob(['request']));
     }
 }
