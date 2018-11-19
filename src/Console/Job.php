@@ -41,6 +41,8 @@ class Job extends base\BaseObject implements queue\JobInterface
 
         $queue
             ->delay(10)
-            ->push(new DialJob(['request']));
+            ->push(new DialJob([
+                'request' => new Evrotel\AutoDial\Request($request->phone, $fileName)
+            ]));
     }
 }
