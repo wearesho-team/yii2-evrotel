@@ -40,7 +40,7 @@ class Job extends base\BaseObject implements queue\JobInterface
         \YIi::info("Pushed $fileName", static::class);
 
         $queue
-            ->delay(10)
+            ->delay(60)
             ->push(new DialJob([
                 'request' => new Evrotel\AutoDial\Request($request->getPhone(), $fileName)
             ]));
