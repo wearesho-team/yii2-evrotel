@@ -61,6 +61,14 @@ $task = new Evrotel\Yii\Task([
 $task->save();
 ```
 
+### Fetching today stats to database
+
+To fetch all calls from stats you need to run method check:
+```bash
+php yii evrotel/check
+```
+then, `Evrotel\Yii\Call` records will be created
+
 ### Running tasks queue
 To create queue jobs from tasks you may run 
 ```bash
