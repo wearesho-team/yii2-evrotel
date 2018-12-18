@@ -23,6 +23,9 @@ use yii\db;
  * @property int $at [timestamp(0)]
  * @property int $created_at [timestamp(0)]
  * @property int $updated_at [timestamp(0)]
+ * @property bool $is_auto [boolean]
+ *
+ * @property-read Task $task
  */
 class Call extends db\ActiveRecord
 {
@@ -39,6 +42,9 @@ class Call extends db\ActiveRecord
                 'value' => function (): string {
                     return Carbon::now()->toDateTimeString();
                 },
+            ],
+            'relate' => [
+                'class' => Call\Behavior\RelateToTask::class,
             ],
         ];
     }
@@ -65,6 +71,43 @@ class Call extends db\ActiveRecord
             [['at',], 'date', 'format' => 'php:Y-m-d H:i:s',],
             [['file',], 'string',],
             [['duration',], 'integer',],
+            [['is_auto',], 'boolean',],
+            [['is_auto',], 'default', 'value' => false,],
         ];
+    }
+
+    public function getTask(): db\ActiveQuery
+    {
+        return $this->hasOne(Task::class, ['id' => 'evrotel_task_id'])
+            ->viaTable('evrotel_task_call', ['evrotel_call_id' => 'id']);
+    }
+
+    public function findRelatedTask(): ?Task
+    {
+        if (!$this->is_auto) {
+            throw new \BadMethodCallException(
+                "Can not find task for not-auto call"
+            );
+        }
+
+        if ($this->task instanceof Task) {
+            return $this->task;
+        }
+
+        $task = Task::find()
+            ->joinWith('call')
+            ->andWhere('evrotel_call.id is null')
+            ->andWhere('evrotel_task.queue_id is not null')
+            ->andWhere(['=', 'evrotel_task.recipient', $this->to])
+            ->andWhere(
+                new db\Expression('(:date - coalesce(evrotel_task.at, evrotel_task.updated_at)) < interval \'5\''),
+                [
+                    'date' => $this->created_at
+                ]
+            )
+            ->orderBy(['evrotel_task.id' => SORT_ASC])
+            ->one();
+
+        return $task;
     }
 }

@@ -575,16 +575,16 @@
         },
         {
             "name": "horat1us/yii2-base",
-            "version": "1.14.0",
+            "version": "1.14.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Horat1us/yii2-base.git",
-                "reference": "04689438bb21566aca62b981d05ff72d0e2a4ee8"
+                "reference": "ad7958188eea29bebec2ec0512b14c00bc7fda82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Horat1us/yii2-base/zipball/04689438bb21566aca62b981d05ff72d0e2a4ee8",
-                "reference": "04689438bb21566aca62b981d05ff72d0e2a4ee8",
+                "url": "https://api.github.com/repos/Horat1us/yii2-base/zipball/ad7958188eea29bebec2ec0512b14c00bc7fda82",
+                "reference": "ad7958188eea29bebec2ec0512b14c00bc7fda82",
                 "shasum": ""
             },
             "require": {
@@ -621,7 +621,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2018-10-26T09:05:26+00:00"
+            "time": "2018-10-30T13:03:02+00:00"
         },
         {
             "name": "horat1us/yii2-environment-config",

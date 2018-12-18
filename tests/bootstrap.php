@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use Dotenv\Dotenv;
 
-$dotEnv = new Dotenv(dirname(__DIR__));
-$dotEnv->load();
-
-getenv('DB_PATH') || putenv("DB_PATH=" . __DIR__ . '/db.sqlite');
-
+if (file_exists(dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env')) {
+    $dotEnv = new Dotenv(dirname(__DIR__));
+    $dotEnv->load();
+}
 
 \Yii::setAlias(
     '@Wearesho/Evrotel/Yii',

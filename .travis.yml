@@ -1,0 +1,24 @@
+language: php
+
+services:
+    - postgresql
+
+php:
+    - 7.2
+    - 7.3
+
+env:
+    - DB_NAME=message_delivery DB_TYPE=pgsql DB_PORT=5432 DB_HOST=localhost DB_USERNAME=postgres DB_PASSWORD=root
+
+before_script:
+    - travis_retry composer self-update
+    - travis_retry composer install --no-interaction --prefer-source
+    - sh -c "if [ '$DB_TYPE' = 'pgsql' ]; then psql -c 'CREATE DATABASE message_delivery;' -U postgres; fi"
+    - sh -c "if [ '$DB_TYPE' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS message_delivery;'; fi"
+
+script:
+    - travis_retry composer lint
+    - travis_retry composer cover
+
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
