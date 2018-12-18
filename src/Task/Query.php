@@ -2,6 +2,7 @@
 
 namespace Wearesho\Evrotel\Yii\Task;
 
+use Carbon\Carbon;
 use Wearesho\Evrotel;
 use yii\db;
 
@@ -19,5 +20,10 @@ class Query extends db\ActiveQuery
     public function withoutJobs(): Query
     {
         return $this->andWhere('evrotel_task.queue_id is null');
+    }
+
+    public function andAtReached(): Query
+    {
+        return $this->andWhere(['<=', 'evrotel_task.at', Carbon::now()->toDateTimeString()]);
     }
 }

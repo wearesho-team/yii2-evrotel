@@ -6,6 +6,11 @@
 composer require wearesho-team/yii2-evrotel
 ```
 
+## Requirements
+- PostgreSQL 10
+- MySQL 8
+- PHP 7.2
+
 ## Usage
 
 ### Configuration

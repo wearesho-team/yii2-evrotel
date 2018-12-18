@@ -67,11 +67,13 @@ class Controller extends console\Controller
     }
 
     /**
+     * @param string|null $date
      * @throws GuzzleHttp\Exception\GuzzleException
      * @throws \Horat1us\Yii\Interfaces\ModelExceptionInterface
      */
-    public function actionCheck(): void
+    public function actionCheck(string $date = null): void
     {
+        $date = is_string($date) ? Carbon::parse($date) : Carbon::now();
         $billCode = $this->config->getBillCode();
 
         $response = $this->client->request(
@@ -80,6 +82,7 @@ class Controller extends console\Controller
             [
                 GuzzleHttp\RequestOptions::QUERY => [
                     'billcode' => $billCode,
+                    'start' => $date->toDateString(),
                 ],
             ]
         );
@@ -90,20 +93,8 @@ class Controller extends console\Controller
         $records = [];
         foreach ($calls as $call) {
             $this->stdout($call['uniqueid'] . "\t");
-            $file = 'http://m01.sipiko.net' . str_replace('/var/www', '', $call['recfile']);
-            $at = Carbon::parse($call['calldate']);
-
-            $attributes = [
-                'from' => $call['numberA'],
-                'to' => $call['numberB'],
-                'direction' => $call['direction'],
-                'disposition' => $call['disposition'],
-                'finished' => true,
-                'file' => $file,
-                'at' => $at->toDateTimeString(),
-            ];
-            $record = new Evrotel\Yii\Call($attributes);
-            if (Evrotel\Yii\Call::find()->andWhere($attributes)->exists()) {
+            $record = $this->parse($call);
+            if (Evrotel\Yii\Call::find()->andWhere($record->attributes)->exists()) {
                 $this->stdout("Skip\n", \yii\helpers\Console::FG_YELLOW);
                 continue;
             }
@@ -111,6 +102,65 @@ class Controller extends console\Controller
             $this->stdout("Save\n", \yii\helpers\Console::FG_GREEN);
         }
         $this->stdout("Saved " . count($records) . " calls\n");
+    }
+
+    /**
+     * @param string|null $date
+     * @throws GuzzleHttp\Exception\GuzzleException
+     * @throws \Horat1us\Yii\Interfaces\ModelExceptionInterface
+     */
+    public function actionCheckAuto(string $date = null): void
+    {
+        $date = is_string($date) ? Carbon::parse($date) : Carbon::now();
+        $billCode = $this->config->getBillCode();
+
+        $response = $this->client->request(
+            'GET',
+            "https://callme.sipiko.net/statusers/stat_{$billCode}_auto.php",
+            [
+                GuzzleHttp\RequestOptions::QUERY => [
+                    'billcode' => $billCode,
+                    'start' => $date->toDateString(),
+                ],
+            ]
+        );
+
+        $body = json_decode((string)$response->getBody(), true);
+        $calls = $body['calls'];
+
+        /** @var Evrotel\Yii\Call[] $records */
+        $records = [];
+        foreach ($calls as $call) {
+            $this->stdout($call['uniqueid'] . "\t");
+            $record = $this->parse($call, true);
+            if (Evrotel\Yii\Call::find()->andWhere($record->attributes)->exists()) {
+                $this->stdout("Skip\n", \yii\helpers\Console::FG_YELLOW);
+                continue;
+            }
+
+            $records[] = ModelException::saveOrThrow($record);
+            $this->stdout("Save\n", \yii\helpers\Console::FG_GREEN);
+        }
+        $this->stdout("Saved " . count($records) . " calls\n");
+    }
+
+    protected function parse(array $call, bool $isAuto = false): Evrotel\Yii\Call
+    {
+        $file = 'http://m01.sipiko.net' . str_replace('/var/www', '', $call['recfile']);
+        $at = Carbon::parse($call['calldate']);
+
+        $attributes = [
+            'from' => $call['numberA'],
+            'to' => $call['numberB'],
+            'direction' => $call['direction'],
+            'disposition' => $call['disposition'],
+            'finished' => true,
+            'file' => $file,
+            'at' => $at->toDateTimeString(),
+            'is_auto' => $isAuto,
+        ];
+
+        return new Evrotel\Yii\Call($attributes);
     }
 
     protected function log(int $count): void
@@ -122,6 +172,7 @@ class Controller extends console\Controller
     {
         $tasks = Evrotel\Yii\Task::find()
             ->withoutJobs()
+            ->andAtReached()
             ->orderBy(['id' => SORT_ASC])
             ->limit($this->config->getChannels())
             ->all();
