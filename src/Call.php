@@ -100,9 +100,11 @@ class Call extends db\ActiveRecord
             ->andWhere('evrotel_task.queue_id is not null')
             ->andWhere(['=', 'evrotel_task.recipient', $this->to])
             ->andWhere(
-                new db\Expression('(:date - coalesce(evrotel_task.at, evrotel_task.updated_at)) < interval \'5\''),
+                new db\Expression(
+                    '(:date - coalesce(evrotel_task.at, evrotel_task.updated_at)) < interval \'10\' minute'
+                ),
                 [
-                    'date' => $this->created_at
+                    'date' => $this->at,
                 ]
             )
             ->orderBy(['evrotel_task.id' => SORT_ASC])
