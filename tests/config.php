@@ -2,6 +2,7 @@
 
 use yii\helpers\ArrayHelper;
 use yii\db\Connection;
+use yii\caching;
 
 $localConfig = __DIR__ . DIRECTORY_SEPARATOR . 'config-local.php';
 
@@ -19,6 +20,9 @@ $config = [
             'dsn' => $dsn,
             'username' => getenv("DB_USERNAME"),
             'password' => getenv("DB_PASSWORD") ?: null,
+        ],
+        'cache' => [
+            'class' => caching\ArrayCache::class,
         ],
     ],
 ];
