@@ -4,6 +4,8 @@
 use yii\console\Application;
 use yii\console\controllers\MigrateController;
 use yii\helpers\ArrayHelper;
+use Wearesho\Evrotel;
+use Wearesho\Yii\Filesystem;
 
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'dev');
@@ -20,6 +22,36 @@ $config = [
                 'Wearesho\\Evrotel\\Yii\\Migrations',
             ],
             'migrationPath' => null,
+        ],
+        'evrotel' => [
+            'class' => Evrotel\Yii\Console\Controller::class,
+        ],
+    ],
+    'bootstrap' => [
+        'evrotel' => [
+            'class' => Evrotel\Yii\Bootstrap::class,
+        ],
+        'fs' => [
+            'class' => Filesystem\Bootstrap::class,
+            'container' => true,
+            'adapters' => [
+                'local' => [
+                    'class' => Filesystem\Local\Adapter::class,
+                    'config' => [
+                        'class' => Filesystem\Local\Config::class,
+                        'savePath' => '@runtime/tests/output',
+                    ],
+                ],
+            ],
+            'config' => [
+                'class' => Filesystem\Config::class,
+                'adapter' => 'local',
+            ],
+        ],
+    ],
+    'container' => [
+        'definitions' => [
+            GuzzleHttp\ClientInterface::class => GuzzleHttp\Client::class,
         ],
     ],
 ];

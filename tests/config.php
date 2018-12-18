@@ -3,6 +3,7 @@
 use yii\helpers\ArrayHelper;
 use yii\db\Connection;
 use yii\caching;
+use yii\queue;
 
 $localConfig = __DIR__ . DIRECTORY_SEPARATOR . 'config-local.php';
 
@@ -23,6 +24,9 @@ $config = [
         ],
         'cache' => [
             'class' => caching\ArrayCache::class,
+        ],
+        'queue' => [
+            'class' => queue\sync\Queue::class,
         ],
     ],
 ];
