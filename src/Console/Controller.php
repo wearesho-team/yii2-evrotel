@@ -6,6 +6,7 @@ use Horat1us\Yii\Exceptions\ModelException;
 use Wearesho\Evrotel;
 use Wearesho\Yii\Filesystem\Filesystem;
 use yii\console;
+use yii\db\ActiveRecordInterface;
 use yii\helpers;
 use yii\di;
 use yii\queue;
@@ -138,7 +139,17 @@ class Controller extends console\Controller
                 continue;
             }
 
-            $records[] = ModelException::saveOrThrow($record);
+            /** @noinspection PhpUnhandledExceptionInspection */
+            $records[] = Evrotel\Yii\Call::getDb()->transaction(function () use (
+                $records,
+                $record
+            ): ActiveRecordInterface {
+                return ModelException::saveOrThrow($record);
+            });
+
+            if ($record->task) {
+                $this->stdout("Task {$record->task->id}\t", helpers\Console::FG_PURPLE);
+            }
             $this->stdout("Save\n", \yii\helpers\Console::FG_GREEN);
         }
         $this->stdout("Saved " . count($records) . " calls\n");
