@@ -1,4 +1,6 @@
 # Yii2 Evrotel Integration
+[![Build Status](https://travis-ci.org/wearesho-team/yii2-evrotel.svg?branch=master)](https://travis-ci.org/wearesho-team/yii2-evrotel)
+[![codecov](https://codecov.io/gh/wearesho-team/yii2-evrotel/branch/master/graph/badge.svg)](https://codecov.io/gh/wearesho-team/yii2-evrotel)
 
 ## Installation
 
@@ -64,15 +66,35 @@ $task = new Evrotel\Yii\Task([
     'file' => $filePath, // have to be resolvable using Filesystem
 ]);
 $task->save();
+
+// If you want to schedule next task after receiving stats
+$repeat = new Evrotel\Yii\Repeat([
+    'task' => $task,
+    'min_duration' => 1, // minimal duration to stop creating tasks, seconds
+    'max_count' => 1, // maximal tasks count in chain
+    'interval' => 5, // interval between tasks, minutes. do not use value less than 5
+    'end_at' => '2018-01-01 12:00::00', // date and time when creating new tasks in chain will be blocked
+]);
+$repeat->save();
 ```
 
 ### Fetching today stats to database
 
+#### Manual calls
 To fetch all calls from stats you need to run method check:
 ```bash
 php yii evrotel/check
 ```
 then, `Evrotel\Yii\Call` records will be created
+
+#### Auto Dial Stats
+To fetch all calls history for auto dial you need to run method check-auto:
+```bash
+php yii evrotel/check-auto
+```
+then, `Evrotel\Yii\Call` records will be created,
+automatically assotiated with `Evrotel\Yii\Task` (using `Evrotel\Yii\Task\Call` relation table)
+and, if `Evrotel\Yii\Task\Repeat` settings exists new task will be created.
 
 ### Running tasks queue
 To create queue jobs from tasks you may run 
