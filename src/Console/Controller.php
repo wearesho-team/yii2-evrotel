@@ -55,8 +55,13 @@ class Controller extends console\Controller
         $this->log($count);
     }
 
+    /**
+     * @deprecated Use `run` action in pair with `crontab`
+     * @see actionRun()
+     */
     public function actionListen(): void
     {
+        $this->stdout("This method is deprecated. Use actionRun with crontab\n", helpers\Console::FG_YELLOW);
         while (true) {
             $count = $this->createJobs();
             if ($count > 0) {
