@@ -24,6 +24,10 @@ class Query extends db\ActiveQuery
 
     public function andAtReached(): Query
     {
-        return $this->andWhere(['<=', 'evrotel_task.at', Carbon::now()->toDateTimeString()]);
+        return $this->andWhere([
+            'or',
+            ['is', 'evrotel_task.at', null],
+            ['<=', 'evrotel_task.at', Carbon::now()->toDateTimeString(),]
+        ]);
     }
 }
