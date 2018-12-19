@@ -82,6 +82,12 @@ class Call extends db\ActiveRecord
             ->viaTable('evrotel_task_call', ['evrotel_call_id' => 'id']);
     }
 
+    public function isDuplicate(): bool
+    {
+        $attributes = $this->getAttributes(null, ['id', 'created_at', 'updated_at',]);
+        return static::find()->andWhere($attributes)->exists();
+    }
+
     public function findRelatedTask(): ?Task
     {
         if (!$this->is_auto) {

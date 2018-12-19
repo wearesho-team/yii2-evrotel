@@ -95,8 +95,7 @@ class Controller extends console\Controller
         foreach ($calls as $call) {
             $this->stdout($call['uniqueid'] . "\t");
             $record = $this->parse($call);
-            $attributes = $record->getAttributes(null, ['id', 'created_at', 'updated_at',]);
-            if (Evrotel\Yii\Call::find()->andWhere($attributes)->exists()) {
+            if ($record->isDuplicate()) {
                 $this->stdout("Skip\n", \yii\helpers\Console::FG_YELLOW);
                 continue;
             }
@@ -135,7 +134,7 @@ class Controller extends console\Controller
         foreach ($calls as $call) {
             $this->stdout($call['uniqueid'] . "\t");
             $record = $this->parse($call, true);
-            if (Evrotel\Yii\Call::find()->andWhere($record->attributes)->exists()) {
+            if ($record->isDuplicate()) {
                 $this->stdout("Skip\n", \yii\helpers\Console::FG_YELLOW);
                 continue;
             }
