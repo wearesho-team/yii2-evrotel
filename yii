@@ -30,6 +30,7 @@ $config = [
     'bootstrap' => [
         'evrotel' => [
             'class' => Evrotel\Yii\Bootstrap::class,
+            'console' => null,
         ],
         'fs' => [
             'class' => Filesystem\Bootstrap::class,
@@ -60,4 +61,3 @@ $config = [
 $application = new Application(ArrayHelper::merge($testsConfig, $config));
 $exitCode = $application->run();
 exit($exitCode);
-
