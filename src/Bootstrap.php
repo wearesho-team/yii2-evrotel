@@ -46,7 +46,7 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
      */
     public function bootstrap($app): void
     {
-        if (\Yii::getAlias('Wearesho/Evrotel/Yii', false) === false) {
+        if (\Yii::getAlias('@Wearesho/Evrotel/Yii', false) === false) {
             \Yii::setAlias('Wearesho/Evrotel/Yii', '@vendor/wearesho-team/yii2-evrotel/src');
         }
 
