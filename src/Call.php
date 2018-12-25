@@ -118,4 +118,19 @@ class Call extends db\ActiveRecord
 
         return $task;
     }
+
+    public static function from(Evrotel\Statistics\Call $statistics): Call
+    {
+        return new static([
+            'from' => $statistics->getFrom(),
+            'to' => $statistics->getTo(),
+            'direction' => $statistics->getDirection(),
+            'disposition' => $statistics->getDisposition(),
+            'duration' => $statistics->getDuration(),
+            'finished' => true,
+            'file' => $statistics->getFile(),
+            'at' => $statistics->getDate(),
+            'is_auto' => $statistics->isAuto(),
+        ]);
+    }
 }
