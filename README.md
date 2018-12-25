@@ -103,10 +103,7 @@ php yii evrotel/run
 ```
 it will create some count jobs from task (see config).
 
-To permanent listen for new tasks you may use command
-```bash
-php yii evrotel/listen
-```
+To permanent listen for new tasks you should use crontab.
 
 ## License
 [MIT](./LICENSE)

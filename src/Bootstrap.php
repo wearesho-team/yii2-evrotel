@@ -41,6 +41,13 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
     ];
 
     /**
+     * @var array|string|Evrotel\Statistics\ConfigInterface
+     */
+    public $statisticsConfig = [
+        'class' => Evrotel\Statistics\EnvironmentConfig::class,
+    ];
+
+    /**
      * @inheritdoc
      * @throws base\InvalidConfigException
      */
@@ -69,5 +76,6 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
     {
         $container->set(ConfigInterface::class, $this->config);
         $container->set(Evrotel\ConfigInterface::class, $this->config);
+        $container->set(Evrotel\Statistics\ConfigInterface::class, $this->statisticsConfig);
     }
 }
