@@ -129,7 +129,7 @@ class Call extends db\ActiveRecord
             'duration' => $statistics->getDuration(),
             'finished' => true,
             'file' => $statistics->getFile(),
-            'at' => $statistics->getDate(),
+            'at' => $statistics->getDate()->format('Y-m-d H:i:s'),
             'is_auto' => $statistics->isAuto(),
         ]);
     }
