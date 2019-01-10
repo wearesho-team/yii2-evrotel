@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca34bcd61151b0d8ebcd7240b31282b3",
+    "content-hash": "b0f457b973edef632994d178946bf2b6",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1175,19 +1175,20 @@
         },
         {
             "name": "wearesho-team/evrotel",
-            "version": "1.5.1",
+            "version": "1.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wearesho-team/evrotel.git",
-                "reference": "5fc340271888fec995c61a9772d35508d9e26893"
+                "reference": "78e4063a0d50927e2064678f9a36a53da302d76f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wearesho-team/evrotel/zipball/5fc340271888fec995c61a9772d35508d9e26893",
-                "reference": "5fc340271888fec995c61a9772d35508d9e26893",
+                "url": "https://api.github.com/repos/wearesho-team/evrotel/zipball/78e4063a0d50927e2064678f9a36a53da302d76f",
+                "reference": "78e4063a0d50927e2064678f9a36a53da302d76f",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "guzzlehttp/guzzle": "^6.3",
                 "horat1us/environment-config": "^1.2",
                 "nesbot/carbon": "^1.30",
@@ -1215,7 +1216,7 @@
                 }
             ],
             "description": "Evrotel API Integration",
-            "time": "2019-01-10T10:09:02+00:00"
+            "time": "2019-01-10T11:24:57+00:00"
         },
         {
             "name": "wearesho-team/yii2-filesystem",
