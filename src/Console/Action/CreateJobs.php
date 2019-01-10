@@ -66,8 +66,6 @@ class CreateJobs extends base\Action
             /** @noinspection PhpUnhandledExceptionInspection */
             ModelException::saveOrThrow($task, ['queue_id']);
         }
-
-
     }
 
     protected function log(int $count): void
