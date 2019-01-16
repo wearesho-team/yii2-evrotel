@@ -84,8 +84,27 @@ class Call extends db\ActiveRecord
 
     public function isDuplicate(): bool
     {
-        $attributes = $this->getAttributes(null, ['id', 'created_at', 'updated_at',]);
+        $except = ['id', 'created_at', 'updated_at',];
+        if (!$this->is_auto) {
+            // not auto calls may duplicate auto calls
+            $except[] = 'is_auto';
+        }
+        $attributes = $this->getAttributes(null, $except);
         return static::find()->andWhere($attributes)->exists();
+    }
+
+    /**
+     * For auto calls may be created same call with is_auto=false
+     * @return self
+     */
+    public function getNotAutoClone(): ?self
+    {
+        if (!$this->is_auto) {
+            throw new \BadMethodCallException(__METHOD__ . ' can be called only for auto call records');
+        }
+
+        $attributes = $this->getAttributes(null, ['id', 'created_at', 'updated_at', 'is_auto']);
+        return static::find()->andWhere($attributes)->one();
     }
 
     public function findRelatedTask(): ?Task

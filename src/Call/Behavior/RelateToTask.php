@@ -17,6 +17,7 @@ class RelateToTask extends Evrotel\Yii\Call\Behavior
     {
         return [
             db\ActiveRecord::EVENT_AFTER_INSERT => 'relate',
+            db\ActiveRecord::EVENT_AFTER_UPDATE => 'afterUpdate',
         ];
     }
 
@@ -47,5 +48,24 @@ class RelateToTask extends Evrotel\Yii\Call\Behavior
 
         $task->populateRelation('call', $call);
         $call->populateRelation('task', $task);
+    }
+
+    /**
+     * @param db\AfterSaveEvent $event
+     * @throws \Horat1us\Yii\Interfaces\ModelExceptionInterface
+     * @throws base\InvalidConfigException
+     */
+    public function afterUpdate(db\AfterSaveEvent $event): void
+    {
+        $call = $this->extractCall($event);
+        $isAutoChanged = array_key_exists('is_auto', $event->changedAttributes)
+            && !$event->changedAttributes['is_auto']
+            && $call->is_auto;
+
+        if (!$isAutoChanged) {
+            return;
+        }
+
+        $this->relate($event);
     }
 }
