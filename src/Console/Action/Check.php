@@ -57,6 +57,14 @@ class Check extends base\Action
                 $this->controller->stdout("Skip\n", Console::FG_YELLOW);
                 continue;
             }
+            if ($record->is_auto) {
+                $clone = $record->getNotAutoClone();
+                if ($clone instanceof Evrotel\Yii\Call) {
+                    $record = $clone;
+                    $clone->is_auto = true;
+                    $this->controller->stdout("Clone {$clone->id}\t", Console::FG_PURPLE);
+                }
+            }
             try {
                 /** @noinspection PhpUnhandledExceptionInspection */
                 Evrotel\Yii\Call::getDb()->transaction(function () use (
