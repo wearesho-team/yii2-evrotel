@@ -140,10 +140,7 @@ class Call extends db\ActiveRecord
 
     public static function from(Evrotel\Statistics\Call $statistics): Call
     {
-        // to prevent bug with missing related task
         $at = Carbon::instance($statistics->getDate())
-            ->copy()
-            ->setTimezone(date_default_timezone_get())
             ->toDateTimeString();
 
         return new static([
