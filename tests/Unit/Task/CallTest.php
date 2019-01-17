@@ -236,4 +236,66 @@ class CallTest extends Evrotel\Yii\Tests\AbstractTestCase
 
         $this->assertNull($task->next);
     }
+
+    public function testChangingTaskStatusToClosedAfterRelating(): void
+    {
+        $task = new Evrotel\Yii\Task([
+            'recipient' => static::PHONE,
+            'file' => static::FILE,
+            'queue_id' => 1,
+            'status' => Evrotel\Yii\Task::STATUS_PROCESS,
+        ]);
+        ModelException::saveOrThrow($task);
+        $call = new Evrotel\Yii\Call([
+            'from' => '1',
+            'to' => static::PHONE,
+            'direction' => Evrotel\Call\Direction::OUTCOME,
+            'finished' => true,
+            'disposition' => Evrotel\Call\Disposition::ANSWERED,
+            'file' => 'demo.wav',
+            'duration' => 10,
+            'at' => Carbon::now()->toDateTimeString(),
+            'is_auto' => true,
+        ]);
+        ModelException::saveOrThrow($call);
+
+        $task->refresh();
+
+        $this->assertEquals(
+            Evrotel\Yii\Task::STATUS_CLOSED,
+            $task->status
+        );
+    }
+
+    public function testSkipChangingStatusIfNotEqualsProcess(): void
+    {
+        foreach ([Evrotel\Yii\Task::STATUS_CLOSED, Evrotel\Yii\Task::STATUS_WAITING] as $status) {
+            $task = new Evrotel\Yii\Task([
+                'recipient' => static::PHONE,
+                'file' => static::FILE,
+                'queue_id' => 1,
+                'status' => $status,
+            ]);
+            ModelException::saveOrThrow($task);
+            $call = new Evrotel\Yii\Call([
+                'from' => '1',
+                'to' => static::PHONE,
+                'direction' => Evrotel\Call\Direction::OUTCOME,
+                'finished' => true,
+                'disposition' => Evrotel\Call\Disposition::ANSWERED,
+                'file' => 'demo.wav',
+                'duration' => 10,
+                'at' => Carbon::now()->toDateTimeString(),
+                'is_auto' => true,
+            ]);
+            ModelException::saveOrThrow($call);
+
+            $task->refresh();
+
+            $this->assertEquals(
+                $status,
+                $task->status
+            );
+        }
+    }
 }

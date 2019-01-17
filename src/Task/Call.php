@@ -33,6 +33,9 @@ class Call extends db\ActiveRecord
             'schedule' => [
                 'class' => Call\Behavior\ScheduleTask::class,
             ],
+            'status' => [
+                'class' => Call\Behavior\Status::class,
+            ],
         ];
     }
 
