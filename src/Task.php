@@ -4,6 +4,7 @@ namespace Wearesho\Evrotel\Yii;
 
 use Carbon\Carbon;
 use Horat1us\Yii\Exceptions\ModelException;
+use Horat1us\Yii\Validators\ConstRangeValidator;
 use yii\behaviors\TimestampBehavior;
 use yii\db;
 
@@ -19,6 +20,7 @@ use yii\db;
  * @property int $updated_at [timestamp(0)]
  * @property int $previous_id [integer]  Previous Repeat Task
  * @property int $at [timestamp(0)]  Queue Job will not be created before this timestamp
+ * @property string $status [varchar(7)]
  *
  * @property Task $previous
  * @property-read Task $next
@@ -28,6 +30,10 @@ use yii\db;
  */
 class Task extends db\ActiveRecord
 {
+    public const STATUS_WAITING = 'waiting'; // Job is not sent to Evrotel
+    public const STATUS_PROCESS = 'process'; // Job is sent to Evrotel, waiting for result
+    public const STATUS_CLOSED = 'closed'; // Job status fetched
+
     public static function tableName(): string
     {
         return 'evrotel_task';
@@ -47,6 +53,9 @@ class Task extends db\ActiveRecord
                     return Carbon::now()->toDateTimeString();
                 },
             ],
+            'status' => [
+                'class' => Task\Behavior\Status::class,
+            ],
         ];
     }
 
@@ -59,6 +68,8 @@ class Task extends db\ActiveRecord
             [['file',], 'string',],
             [['previous_id',], 'exist', 'targetRelation' => 'previous',],
             [['at',], 'date', 'format' => 'php:Y-m-d H:i:s',],
+            [['status',], 'default', 'value' => static::STATUS_WAITING,],
+            [['status',], ConstRangeValidator::class,],
         ];
     }
 

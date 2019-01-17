@@ -48,9 +48,10 @@ class CreateJobs extends base\Action
     {
         $tasks = Evrotel\Yii\Task::find()
             ->withoutJobs()
+            ->andWhere(['=', 'evrotel_task.status', Evrotel\Yii\Task::STATUS_WAITING])
             ->andAtReached()
-            ->orderBy(['id' => SORT_ASC])
-            ->limit($this->config->getChannels())
+            ->orderBy(['id' => SORT_DESC])
+            ->limit($this->getAvailableChannelsCount())
             ->all();
 
         foreach ($tasks as $task) {
@@ -71,5 +72,15 @@ class CreateJobs extends base\Action
     protected function log(int $count): void
     {
         $this->controller->stdout("Created {$count} tasks.", helpers\Console::FG_GREEN);
+    }
+
+    protected function getAvailableChannelsCount(): int
+    {
+        $busyChannelsCount = Evrotel\Yii\Task::find()
+            ->andWhere(['=', 'evrotel_task.status', Evrotel\Yii\Task::STATUS_PROCESS])
+            ->count();
+        $totalChannelsCount = $this->config->getChannels();
+
+        return $totalChannelsCount - $busyChannelsCount;
     }
 }

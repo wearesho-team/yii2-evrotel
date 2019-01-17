@@ -4,6 +4,7 @@ namespace Wearesho\Evrotel\Yii\Tests\Unit;
 
 use Horat1us\Yii\Exceptions\ModelException;
 use Wearesho\Evrotel;
+use yii\base\ModelEvent;
 
 /**
  * Class TaskTest
@@ -61,5 +62,27 @@ class TaskTest extends Evrotel\Yii\Tests\AbstractTestCase
     {
         $task = new Evrotel\Yii\Task;
         $task->number;
+    }
+
+    public function testChangingStatusAfterPushingToQueue(): void
+    {
+        $task = new Evrotel\Yii\Task([
+            'recipient' => '380970000000',
+            'file' => 'demo.wav',
+        ]);
+        ModelException::saveOrThrow($task);
+
+        $this->assertEquals(Evrotel\Yii\Task::STATUS_WAITING, $task->status);
+
+        $task->queue_id = 1;
+        ModelException::saveOrThrow($task);
+
+        $this->assertEquals(Evrotel\Yii\Task::STATUS_PROCESS, $task->status);
+
+        $task->status = Evrotel\Yii\Task::STATUS_CLOSED;
+        $task->queue_id = 2;
+        ModelException::saveOrThrow($task);
+
+        $this->assertEquals(Evrotel\Yii\Task::STATUS_CLOSED, $task->status);
     }
 }
