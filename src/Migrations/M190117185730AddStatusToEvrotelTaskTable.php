@@ -46,7 +46,8 @@ class M190117185730AddStatusToEvrotelTaskTable extends Migration
         $this->dropColumn('evrotel_task', 'status');
         if ($this->db->driverName === 'pgsql') {
             $this->execute(/** @lang PostgreSQL */
-                'DROP TYPE evrotel_task_status;');
+                'DROP TYPE evrotel_task_status;'
+            );
         }
     }
 }
