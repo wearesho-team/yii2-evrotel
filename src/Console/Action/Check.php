@@ -57,7 +57,7 @@ class Check extends base\Action
                 $this->controller->stdout("Skip\n", Console::FG_YELLOW);
                 continue;
             }
-            if ($record->is_auto) {
+            if ($this->isAuto && $record->is_auto) {
                 $clone = $record->getNotAutoClone();
                 if ($clone instanceof Evrotel\Yii\Call) {
                     $record = $clone;
