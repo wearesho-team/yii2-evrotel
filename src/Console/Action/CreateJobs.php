@@ -65,7 +65,7 @@ class CreateJobs extends base\Action
             $task->queue_id = $id;
 
             /** @noinspection PhpUnhandledExceptionInspection */
-            ModelException::saveOrThrow($task, ['queue_id']);
+            ModelException::saveOrThrow($task);
         }
     }
 
