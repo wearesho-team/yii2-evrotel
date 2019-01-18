@@ -126,10 +126,10 @@ class Call extends db\ActiveRecord
             ->andWhere(['=', 'evrotel_task.recipient', $this->to])
             ->andWhere(
                 new db\Expression(
-                    '(:date - coalesce(evrotel_task.at, evrotel_task.updated_at)) < interval \'10\' minute'
+                    '(coalesce(evrotel_task.at, evrotel_task.updated_at)) > :date'
                 ),
                 [
-                    'date' => $this->at,
+                    'date' => Carbon::parse($this->at)->toDateString(),
                 ]
             )
             ->orderBy(['evrotel_task.id' => SORT_ASC])

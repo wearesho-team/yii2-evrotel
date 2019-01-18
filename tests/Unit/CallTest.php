@@ -85,7 +85,7 @@ class CallTest extends Evrotel\Yii\Tests\AbstractTestCase
             'file' => 'demo.wav',
             'queue_id' => 1,
         ]);
-        Carbon::setTestNow(Carbon::now()->subMinutes(11));
+        Carbon::setTestNow(Carbon::now()->subDay());
         ModelException::saveOrThrow($relatedTask);
         Carbon::setTestNow();
 
