@@ -76,7 +76,7 @@ class CreateJobsTest extends Evrotel\Yii\Tests\AbstractTestCase
             new Evrotel\Yii\Console\Job([
                 'request' => new Evrotel\AutoDial\Request($task->recipient, $task->file),
             ])
-        );
+        )->willReturn($queueJobId = 1);
 
         $fs = $this->createMock(Filesystem::class);
         $fs->method('getUrl')->willReturn('test.wav');
@@ -87,5 +87,12 @@ class CreateJobsTest extends Evrotel\Yii\Tests\AbstractTestCase
             'fs' => $fs,
         ]);
         $action->run();
+
+        $task->refresh();
+        $this->assertEquals($queueJobId, $task->queue_id);
+        $this->assertEquals(
+            Evrotel\Yii\Task::STATUS_PROCESS,
+            $task->status
+        );
     }
 }
