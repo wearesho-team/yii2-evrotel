@@ -43,6 +43,7 @@ class CreateJobs extends base\Action
 
     /**
      * @throws \Horat1us\Yii\Interfaces\ModelExceptionInterface
+     * @throws base\InvalidConfigException
      */
     public function run(): void
     {
@@ -54,18 +55,29 @@ class CreateJobs extends base\Action
             ->limit($this->getAvailableChannelsCount())
             ->all();
 
-        foreach ($tasks as $task) {
-            $publicFilePath = $this->fs->getUrl($task->file);
-            $request = new Evrotel\AutoDial\Request($task->recipient, $publicFilePath);
+        $timeouts = [];
 
-            $id = $this->queue->push(new Evrotel\Yii\Console\Job([
-                'request' => $request,
-            ]));
+        foreach ($tasks as $task) {
+            if (array_key_exists($task->file, $timeouts)) {
+                $this->queue->delay($timeouts[$task->file]);
+            }
+
+            $job = new Evrotel\Yii\Console\Job\Media([
+                'taskId' => $task->id,
+            ]);
+            if ($job->isPushed()) {
+                $job = new Evrotel\Yii\Console\Job\Dial([
+                    'taskId' => $task->id,
+                ]);
+            }
+            $id = $this->queue->push($job);
 
             $task->queue_id = $id;
 
             /** @noinspection PhpUnhandledExceptionInspection */
             ModelException::saveOrThrow($task);
+
+            $timeouts[$task->file] = 10;
         }
     }
 

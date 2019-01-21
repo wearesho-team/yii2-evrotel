@@ -5,6 +5,7 @@ namespace Wearesho\Evrotel\Yii;
 use Carbon\Carbon;
 use Horat1us\Yii\Exceptions\ModelException;
 use Horat1us\Yii\Validators\ConstRangeValidator;
+use Wearesho\Evrotel;
 use yii\behaviors\TimestampBehavior;
 use yii\db;
 
@@ -33,6 +34,7 @@ class Task extends db\ActiveRecord
     public const STATUS_WAITING = 'waiting'; // Job is not sent to Evrotel
     public const STATUS_PROCESS = 'process'; // Job is sent to Evrotel, waiting for result
     public const STATUS_CLOSED = 'closed'; // Job status fetched
+    public const STATUS_ERROR = 'error'; // Pushing request failed
 
     public static function tableName(): string
     {
@@ -151,9 +153,10 @@ QUERY
      */
     public function copy(\DateTimeInterface $at = null): Task
     {
-        $attributes = $this->getAttributes(['recipient', 'file',]);
+        $attributes = $this->getAttributes(['recipient', 'file', 'status',]);
 
         $task = new Task($attributes);
+        $task->status = static::STATUS_WAITING;
         $task->at = $at->format('Y-m-d H:i:s');
         $task->setPrevious($this);
 
