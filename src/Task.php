@@ -153,11 +153,14 @@ QUERY
      */
     public function copy(\DateTimeInterface $at = null): Task
     {
-        $attributes = $this->getAttributes(['recipient', 'file', 'status',]);
+        $attributes = $this->getAttributes(['recipient', 'file',]);
 
         $task = new Task($attributes);
         $task->status = static::STATUS_WAITING;
-        $task->at = $at->format('Y-m-d H:i:s');
+        if (!is_null($at)) {
+            $task->at = $at->format('Y-m-d H:i:s');
+        }
+
         $task->setPrevious($this);
 
         ModelException::saveOrThrow($task);
