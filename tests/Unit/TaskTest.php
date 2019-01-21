@@ -85,4 +85,25 @@ class TaskTest extends Evrotel\Yii\Tests\AbstractTestCase
 
         $this->assertEquals(Evrotel\Yii\Task::STATUS_CLOSED, $task->status);
     }
+
+    public function testCopyingWithoutAt(): void
+    {
+        $task = new Evrotel\Yii\Task([
+            'recipient' => '380970000000',
+            'file' => 'demo.wav',
+            'status' => Evrotel\Yii\Task::STATUS_ERROR,
+        ]);
+
+        $copy = $task->copy();
+        $this->assertNotEquals($task->id, $copy->id);
+        $this->assertEquals(
+            $task->getAttributes(['recipient', 'file']),
+            $copy->getAttributes(['recipient', 'file'])
+        );
+        $this->assertEquals(
+            Evrotel\Yii\Task::STATUS_WAITING,
+            $copy->status
+        );
+        $this->assertNull($copy->at);
+    }
 }
