@@ -3,78 +3,61 @@
 namespace Wearesho\Evrotel\Yii\Console;
 
 use Wearesho\Evrotel;
+use Wearesho\Yii\Filesystem\Filesystem;
 use yii\base;
 use yii\queue;
 use yii\di;
-use yii\caching;
 
 /**
  * Class Job
  * @package Wearesho\Evrotel\Yii\Console
  */
-class Job extends base\BaseObject implements queue\JobInterface
+abstract class Job extends base\BaseObject implements queue\JobInterface
 {
-    /** @var string|array|Evrotel\AutoDial\RequestInterface */
-    public $request;
+    /** @var int */
+    public $taskId;
 
-    public $repository = [
-        'class' => Evrotel\AutoDial\MediaRepository::class,
+    /** @var array|string */
+    public $fs = [
+        'class' => Filesystem::class,
     ];
 
-    /** @var string|array|caching\Cache */
-    public $cache = 'cache';
+    /**
+     * @return Filesystem
+     * @throws base\InvalidConfigException
+     */
+    protected function getFs(): Filesystem
+    {
+        /** @var Filesystem $fs */
+        $fs = di\Instance::ensure($this->fs, Filesystem::class);
+        return $fs;
+    }
 
     /**
-     * @param queue\Queue $queue
-     * @throws \yii\base\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return Evrotel\Yii\Task
+     * @throws base\InvalidConfigException
      */
-    public function execute($queue): void
+    protected function getTask(): Evrotel\Yii\Task
     {
-        /** @var Evrotel\AutoDial\RequestInterface $request */
-        $request = di\Instance::ensure($this->request, Evrotel\AutoDial\RequestInterface::class);
-        $rawFileName = $request->getFileName();
-
-        if (!is_null($this->cache)) {
-            /** @var caching\Cache $cache */
-            $cache = di\Instance::ensure($this->cache, caching\Cache::class);
-            $cacheKey = $this->getCacheKey($rawFileName);
-
-            if ($cache->exists($cacheKey)) {
-                $this->push($queue, $request);
-                return;
-            }
+        if (is_null($this->taskId)) {
+            throw new base\InvalidConfigException("taskId have to be specified");
         }
-
-        /** @var Evrotel\AutoDial\MediaRepository $repository */
-        $repository = di\Instance::ensure($this->repository, Evrotel\AutoDial\MediaRepository::class);
-        $fileName = $repository->push($rawFileName);
-        \Yii::info("Pushed $fileName", static::class);
-
-        if (!is_null($cache) && !is_null($cacheKey)) {
-            $cache->set($cacheKey, true, 60 * 60 * 12);
+        $task = Evrotel\Yii\Task::findOne((int)$this->taskId);
+        if (!$task instanceof Evrotel\Yii\Task) {
+            throw new base\InvalidConfigException("Task {$this->taskId} not found");
         }
-
-        $this->push(
-            $queue,
-            new Evrotel\AutoDial\Request($request->getPhone(), $fileName)
-        );
+        return $task;
     }
 
-    protected function push(queue\Queue $queue, Evrotel\AutoDial\RequestInterface $request)
+    /**
+     * @param Evrotel\Yii\Task|null $task
+     * @return Evrotel\AutoDial\RequestInterface
+     * @throws base\InvalidConfigException
+     */
+    protected function getRequest(Evrotel\Yii\Task $task = null): Evrotel\AutoDial\RequestInterface
     {
-        $queue
-            ->delay(120)
-            ->push(new DialJob([
-                'request' => $request,
-            ]));
-    }
-
-    protected function getCacheKey(string $fileName): array
-    {
-        return [
-            'type' => static::class,
-            'fileName' => $fileName,
-        ];
+        $task = $task ?? $this->getTask();
+        $publicFilePath = $this->getFs()->getUrl($task->file);
+        return new Evrotel\AutoDial\Request($task->recipient, $publicFilePath);
     }
 }
