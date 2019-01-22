@@ -46,7 +46,9 @@ class Dial extends Evrotel\Yii\Console\Job
             throw $exception;
         }
 
-        if ($disposition !== Evrotel\Call\Disposition::ANSWERED && $task->isRepeatable()) {
+        if ($disposition === Evrotel\Call\Disposition::ANSWERED) {
+            sleep(20); // wait call to end
+        } elseif ($task->isRepeatable()) {
             $task->repeat();
         }
 
