@@ -51,7 +51,7 @@ class CreateJobs extends base\Action
             ->withoutJobs()
             ->andWhere(['=', 'evrotel_task.status', Evrotel\Yii\Task::STATUS_WAITING])
             ->andAtReached()
-            ->orderBy(['id' => SORT_DESC])
+            ->orderBy(['id' => SORT_ASC])
             ->limit($this->getAvailableChannelsCount())
             ->all();
 
@@ -78,6 +78,11 @@ class CreateJobs extends base\Action
             ModelException::saveOrThrow($task);
 
             $timeouts[$task->file] = 10;
+
+            $this->controller->stdout(
+                "Task #{$task->id} pushed to queue as " . get_class($job) . "#{$id}",
+                helpers\Console::FG_GREEN
+            );
         }
     }
 

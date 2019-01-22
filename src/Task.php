@@ -22,6 +22,7 @@ use yii\db;
  * @property int $previous_id [integer]  Previous Repeat Task
  * @property int $at [timestamp(0)]  Queue Job will not be created before this timestamp
  * @property string $status [varchar(7)]
+ * @property string $response Response from autodial server
  *
  * @property Task $previous
  * @property-read Task $next
@@ -72,6 +73,7 @@ class Task extends db\ActiveRecord
             [['at',], 'date', 'format' => 'php:Y-m-d H:i:s',],
             [['status',], 'default', 'value' => static::STATUS_WAITING,],
             [['status',], ConstRangeValidator::class,],
+            [['response',], 'string',],
         ];
     }
 
@@ -172,5 +174,35 @@ QUERY
         $this->repeat->copy($task);
 
         return $task;
+    }
+
+    public function isRepeatable(): bool
+    {
+        if (!$this->repeat instanceof Task\Repeat) {
+            return false;
+        }
+
+        if ($this->number >= $this->repeat->max_count) {
+            return false;
+        }
+
+        if (Carbon::parse($this->repeat->end_at) < Carbon::now()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return Task
+     * @throws \Horat1us\Yii\Interfaces\ModelExceptionInterface
+     */
+    public function repeat(): Task
+    {
+        if (!$this->isRepeatable()) {
+            throw new \BadMethodCallException("Cannot repeat not-repeatable task #{$this->id}");
+        }
+
+        return $this->copy(Carbon::now()->addMinutes($this->repeat->interval));
     }
 }

@@ -7,6 +7,7 @@ use Wearesho\Evrotel;
 use Wearesho\Yii\Filesystem\Filesystem;
 use yii\base;
 use yii\queue;
+use yii\console;
 use yii\caching;
 
 /**
@@ -71,7 +72,7 @@ class CreateJobsTest extends Evrotel\Yii\Tests\AbstractTestCase
         ]);
         ModelException::saveOrThrow($task);
 
-        $controller = new base\Controller('evrotel', new base\Module('app'));
+        $controller = new console\Controller('evrotel', new base\Module('app'));
         $queue = $this->createMock(queue\sync\Queue::class);
         $queue->expects($this->exactly(1))->method('push')->with(
             new Evrotel\Yii\Console\Job\Media([
@@ -114,7 +115,7 @@ class CreateJobsTest extends Evrotel\Yii\Tests\AbstractTestCase
         ]);
         ModelException::saveOrThrow($task);
 
-        $controller = new base\Controller('evrotel', new base\Module('app'));
+        $controller = new console\Controller('evrotel', new base\Module('app'));
         $queue = $this->createMock(queue\sync\Queue::class);
         $queue->expects($this->exactly(1))->method('push')->with(
             new Evrotel\Yii\Console\Job\Dial([

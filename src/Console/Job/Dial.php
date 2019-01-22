@@ -2,6 +2,7 @@
 
 namespace Wearesho\Evrotel\Yii\Console\Job;
 
+use Carbon\Carbon;
 use Horat1us\Yii\Exceptions\ModelException;
 use Wearesho\Evrotel;
 use yii\di;
@@ -37,14 +38,20 @@ class Dial extends Evrotel\Yii\Console\Job
             $disposition = $worker->push($request);
         } catch (Evrotel\AutoDial\Exception $exception) {
             $task->status = Evrotel\Yii\Task::STATUS_ERROR;
+            $task->response = (string)$exception->getResponse()->getBody();
             ModelException::saveOrThrow($task);
 
-            $task->copy();
+            $task->copy(Carbon::now()->addMinute());
 
             throw $exception;
         }
 
+        if ($disposition !== Evrotel\Call\Disposition::ANSWERED && $task->isRepeatable()) {
+            $task->repeat();
+        }
+
         $task->status = Evrotel\Yii\Task::STATUS_CLOSED;
+        $task->response = $disposition;
         ModelException::saveOrThrow($task);
 
         \Yii::info("Task {$this->taskId} disposition: " . $disposition, static::class);

@@ -28,25 +28,14 @@ class ScheduleTask extends Evrotel\Yii\Task\Call\Behavior
     public function scheduleNextTask(db\AfterSaveEvent $event): void
     {
         $relation = $this->extractCallRelation($event);
+        if (!$relation->task->isRepeatable()) {
+            return;
+        }
+        if ($relation->call->disposition !== Evrotel\Call\Disposition::ANSWERED) {
+            return;
+        }
 
         $repeat = $relation->task->repeat;
-
-        if (!$repeat instanceof Evrotel\Yii\Task\Repeat) {
-            \Yii::debug(
-                "Skip scheduling next task after {$relation->evrotel_task_id}: missing repeat config",
-                static::class
-            );
-            return;
-        }
-
-        if (Carbon::parse($repeat->end_at) < Carbon::now()) {
-            \Yii::debug(
-                "Skip scheduling next task after {$relation->evrotel_task_id}: period limit",
-                static::class
-            );
-            return;
-        }
-
         if ($relation->call->duration >= $repeat->min_duration) {
             \Yii::debug(
                 "Skip scheduling next task after {$relation->evrotel_task_id}: "
@@ -56,17 +45,7 @@ class ScheduleTask extends Evrotel\Yii\Task\Call\Behavior
             return;
         }
 
-        $number = $relation->task->number;
-        if ($number >= $repeat->max_count) {
-            \Yii::debug(
-                "Skip scheduling next task after {$relation->evrotel_task_id}: "
-                . "count reached {$number}",
-                static::class
-            );
-            return;
-        }
-
-        $nextTask = $relation->task->copy(Carbon::now()->addMinutes($repeat->interval));
+        $nextTask = $relation->task->repeat();
         \Yii::info("Created task {$nextTask->id} after {$relation->evrotel_task_id}", static::class);
     }
 }
