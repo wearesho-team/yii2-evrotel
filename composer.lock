@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "69d1e63aa8afc31dda8f41e30578c70a",
+    "content-hash": "c8ebcf47c6f1fff288ab364e77dc6141",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1175,16 +1175,16 @@
         },
         {
             "name": "wearesho-team/evrotel",
-            "version": "3.0.0",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wearesho-team/evrotel.git",
-                "reference": "171f0811a6fefd4b230a9238c8a2e1bcd2fc6586"
+                "reference": "d303acf3062c4bb1abbae4c9fd5743739f0132cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wearesho-team/evrotel/zipball/171f0811a6fefd4b230a9238c8a2e1bcd2fc6586",
-                "reference": "171f0811a6fefd4b230a9238c8a2e1bcd2fc6586",
+                "url": "https://api.github.com/repos/wearesho-team/evrotel/zipball/d303acf3062c4bb1abbae4c9fd5743739f0132cd",
+                "reference": "d303acf3062c4bb1abbae4c9fd5743739f0132cd",
                 "shasum": ""
             },
             "require": {
@@ -1216,7 +1216,7 @@
                 }
             ],
             "description": "Evrotel API Integration",
-            "time": "2019-01-18T13:50:30+00:00"
+            "time": "2019-01-23T15:21:16+00:00"
         },
         {
             "name": "wearesho-team/yii2-filesystem",

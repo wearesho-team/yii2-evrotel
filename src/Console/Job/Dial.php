@@ -41,18 +41,26 @@ class Dial extends Evrotel\Yii\Console\Job
             $task->response = (string)$exception->getResponse()->getBody();
             ModelException::saveOrThrow($task);
 
-            $task->copy(Carbon::now()->addMinute());
+            $queue->delay(5)->push($this);
 
             throw $exception;
         }
 
-        if ($disposition === Evrotel\Call\Disposition::ANSWERED) {
+        $shouldBeReDialed = in_array($disposition, [
+            Evrotel\AutoDial\Disposition::CONGESTION,
+            Evrotel\AutoDial\Disposition::NONE,
+        ]);
+        if ($shouldBeReDialed) {
+            $queue->delay(5)->push($this);
+            $task->status = Evrotel\Yii\Task::STATUS_ERROR;
+        } elseif ($disposition === Evrotel\AutoDial\Disposition::ANSWER) {
             sleep(20); // wait call to end
+            $task->status = Evrotel\Yii\Task::STATUS_CLOSED;
         } elseif ($task->isRepeatable()) {
             $task->repeat();
+            $task->status = Evrotel\Yii\Task::STATUS_CLOSED;
         }
 
-        $task->status = Evrotel\Yii\Task::STATUS_CLOSED;
         $task->response = $disposition;
         ModelException::saveOrThrow($task);
 
