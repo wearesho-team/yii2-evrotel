@@ -59,6 +59,8 @@ class Dial extends Evrotel\Yii\Console\Job
         } elseif ($task->isRepeatable()) {
             $task->repeat();
             $task->status = Evrotel\Yii\Task::STATUS_CLOSED;
+        } else {
+            $task->status = Evrotel\Yii\Task::STATUS_CLOSED;
         }
 
         $task->response = $disposition;
