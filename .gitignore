@@ -3,3 +3,4 @@
 /vendor/
 coverage.xml
 /tests/output/
+cghooks.lock

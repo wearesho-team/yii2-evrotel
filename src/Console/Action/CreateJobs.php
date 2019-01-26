@@ -3,6 +3,7 @@
 
 namespace Wearesho\Evrotel\Yii\Console\Action;
 
+use Carbon\Carbon;
 use Horat1us\Yii\Exceptions\ModelException;
 use Wearesho\Yii\Filesystem\Filesystem;
 use Wearesho\Evrotel;
@@ -50,6 +51,7 @@ class CreateJobs extends base\Action
         $tasks = Evrotel\Yii\Task::find()
             ->withoutJobs()
             ->andWhere(['=', 'evrotel_task.status', Evrotel\Yii\Task::STATUS_WAITING])
+            ->andWhere(['>', 'evrotel_task.created_at', Carbon::now()->toDateString()])
             ->andAtReached()
             ->orderBy(['id' => SORT_ASC])
             ->limit($this->getAvailableChannelsCount())
