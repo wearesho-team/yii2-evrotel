@@ -41,9 +41,10 @@ class Dial extends Evrotel\Yii\Console\Job
             $task->response = (string)$exception->getResponse()->getBody();
             ModelException::saveOrThrow($task);
 
-            $queue->delay(5)->push($this);
-
-            throw $exception;
+            if ($task->isRepeatable()) {
+                $task->repeat();
+            }
+            return;
         }
 
         $shouldBeReDialed = in_array($disposition, [
@@ -51,7 +52,7 @@ class Dial extends Evrotel\Yii\Console\Job
             Evrotel\AutoDial\Disposition::NONE,
         ]);
         if ($shouldBeReDialed) {
-            $queue->delay(5)->push($this);
+            $task->repeat();
             $task->status = Evrotel\Yii\Task::STATUS_ERROR;
         } elseif ($disposition === Evrotel\AutoDial\Disposition::ANSWER) {
             sleep(20); // wait call to end
@@ -65,7 +66,5 @@ class Dial extends Evrotel\Yii\Console\Job
 
         $task->response = $disposition;
         ModelException::saveOrThrow($task);
-
-        \Yii::info("Task {$this->taskId} disposition: " . $disposition, static::class);
     }
 }
