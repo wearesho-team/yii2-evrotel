@@ -52,7 +52,7 @@ class Dial extends Evrotel\Yii\Console\Job
             Evrotel\AutoDial\Disposition::NONE,
         ]);
         if ($shouldBeReDialed) {
-            $task->repeat();
+            $task->isRepeatable() && $task->repeat();
             $task->status = Evrotel\Yii\Task::STATUS_ERROR;
         } elseif ($disposition === Evrotel\AutoDial\Disposition::ANSWER) {
             sleep(20); // wait call to end
