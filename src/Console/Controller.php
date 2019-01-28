@@ -24,6 +24,9 @@ class Controller extends console\Controller
                 'class' => Action\Check::class,
                 'isAuto' => true,
             ],
+            'clean' => [
+                'class' => Action\Clean::class,
+            ],
         ];
     }
 }
