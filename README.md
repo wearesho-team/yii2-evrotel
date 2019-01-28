@@ -105,5 +105,11 @@ it will create some count jobs from task (see config).
 
 To permanent listen for new tasks you should use crontab.
 
+### Cleaning tasks queue
+To move all waiting tasks to closed you have to run:
+```bash
+php yii evrotel/clean
+```
+
 ## License
 [MIT](./LICENSE)
