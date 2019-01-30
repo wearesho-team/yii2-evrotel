@@ -58,7 +58,8 @@ class RelateToTask extends Evrotel\Yii\Call\Behavior
     public function afterUpdate(db\AfterSaveEvent $event): void
     {
         $call = $this->extractCall($event);
-        $isAutoChanged = array_key_exists('is_auto', $event->changedAttributes)
+        $isAutoChanged =
+            (isset($event->changedAttributes['is_auto']) || \array_key_exists('is_auto', $event->changedAttributes))
             && !$event->changedAttributes['is_auto']
             && $call->is_auto;
 
