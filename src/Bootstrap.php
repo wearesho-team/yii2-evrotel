@@ -57,13 +57,13 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
             \Yii::setAlias('Wearesho/Evrotel/Yii', '@vendor/wearesho-team/yii2-evrotel/src');
         }
 
-        if (!is_null($this->web) && $app instanceof web\Application) {
+        if (!\is_null($this->web) && $app instanceof web\Application) {
             /** @var Evrotel\Yii\Web\Bootstrap $bootstrap */
             $bootstrap = di\Instance::ensure($this->web, Evrotel\Yii\Web\Bootstrap::class);
             $bootstrap->bootstrap($app);
         }
 
-        if (!is_null($this->console) && $app instanceof console\Application) {
+        if (!\is_null($this->console) && $app instanceof console\Application) {
             /** @var Evrotel\Yii\Console\Bootstrap $bootstrap */
             $bootstrap = di\Instance::ensure($this->console, Evrotel\Yii\Console\Bootstrap::class);
             $bootstrap->bootstrap($app);

@@ -159,7 +159,7 @@ QUERY
 
         $task = new Task($attributes);
         $task->status = static::STATUS_WAITING;
-        if (!is_null($at)) {
+        if (!\is_null($at)) {
             $task->at = $at->format('Y-m-d H:i:s');
         }
 

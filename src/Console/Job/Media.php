@@ -44,7 +44,7 @@ class Media extends Evrotel\Yii\Console\Job
         $fileName = $repository->push($rawFileName);
         \Yii::info("Pushed $fileName", static::class);
 
-        if (!is_null($this->cache) && !is_null($cacheKey)) {
+        if (!\is_null($this->cache) && !\is_null($cacheKey)) {
             /** @var caching\Cache $cache */
             $cache = di\Instance::ensure($this->cache, caching\Cache::class);
             $cache->set($cacheKey, true, 60 * 60 * 12);
@@ -63,7 +63,7 @@ class Media extends Evrotel\Yii\Console\Job
      */
     public function isPushed(string $fileName = null): bool
     {
-        if (is_null($this->cache)) {
+        if (\is_null($this->cache)) {
             return false;
         }
 

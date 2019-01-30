@@ -80,6 +80,6 @@ class Check extends base\Action
             $records[] = $record;
             $this->controller->stdout("Save\n", Console::FG_GREEN);
         }
-        $this->controller->stdout("Saved " . count($records) . " calls\n");
+        $this->controller->stdout("Saved " . \count($records) . " calls\n");
     }
 }

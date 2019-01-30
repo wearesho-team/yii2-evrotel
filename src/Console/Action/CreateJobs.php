@@ -60,7 +60,7 @@ class CreateJobs extends base\Action
         $timeouts = [];
 
         foreach ($tasks as $task) {
-            if (array_key_exists($task->file, $timeouts)) {
+            if (\array_key_exists($task->file, $timeouts)) {
                 $this->queue->delay($timeouts[$task->file]);
             }
 
@@ -82,7 +82,7 @@ class CreateJobs extends base\Action
             $timeouts[$task->file] = 10;
 
             $this->controller->stdout(
-                "Task #{$task->id} pushed to queue as " . get_class($job) . "#{$id}",
+                "Task #{$task->id} pushed to queue as " . \get_class($job) . "#{$id}",
                 helpers\Console::FG_GREEN
             );
         }
