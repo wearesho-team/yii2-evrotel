@@ -44,7 +44,7 @@ class Task extends db\ActiveRecord
 
     public static function find(): Task\Query
     {
-        return new Task\Query;
+        return new Task\Query(static::class);
     }
 
     public function behaviors(): array
