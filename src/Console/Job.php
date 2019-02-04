@@ -39,7 +39,7 @@ abstract class Job extends base\BaseObject implements queue\JobInterface
      */
     protected function getTask(): Evrotel\Yii\Task
     {
-        if (is_null($this->taskId)) {
+        if (\is_null($this->taskId)) {
             throw new base\InvalidConfigException("taskId have to be specified");
         }
         $task = Evrotel\Yii\Task::findOne((int)$this->taskId);
