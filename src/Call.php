@@ -24,6 +24,7 @@ use yii\db;
  * @property int $created_at [timestamp(0)]
  * @property int $updated_at [timestamp(0)]
  * @property bool $is_auto [boolean]
+ * @property string $external_id [integer]
  *
  * @property-read Task $task
  */
@@ -73,6 +74,8 @@ class Call extends db\ActiveRecord
             [['duration',], 'integer',],
             [['is_auto',], 'boolean',],
             [['is_auto',], 'default', 'value' => false,],
+            [['external_id',], 'integer', 'min' => 1,],
+            [['external_id',], 'unique',],
         ];
     }
 
@@ -153,6 +156,7 @@ class Call extends db\ActiveRecord
             'file' => $statistics->getFile(),
             'at' => $at,
             'is_auto' => $statistics->isAuto(),
+            'external_id' => $statistics->getId(),
         ]);
     }
 }
