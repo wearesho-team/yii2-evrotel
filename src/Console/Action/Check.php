@@ -90,6 +90,13 @@ class Check extends base\Action
                     ModelException::saveOrThrow($record);
                 });
             } /** @noinspection PhpRedundantCatchClauseInspection */ catch (ModelExceptionInterface $exception) {
+                if (count($exception->getModel()->getFirstErrors()) === 1
+                    && $exception->getModel()->getFirstError('external_id')
+                ) {
+                    $this->controller->stdout("Duplicate\n", Console::FG_YELLOW);
+                    continue;
+                }
+
                 $this->controller->stdout($exception->getMessage() . "\n", Console::FG_RED);
                 return;
             }
