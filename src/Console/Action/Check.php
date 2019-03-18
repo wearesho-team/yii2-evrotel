@@ -45,18 +45,35 @@ class Check extends base\Action
      */
     public function run(string $date = null)
     {
-        $date = is_string($date) ? Carbon::parse($date) : Carbon::now();
+        $date = is_string($date) ? Carbon::parse($date)->startOfDay() : Carbon::now();
         $calls = $this->client->getCalls((bool)$this->isAuto, $date);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $storedCalls = Evrotel\Yii\Call::find()
+            ->andWhere([
+                'between',
+                'at',
+                $date->toDateString(),
+                Carbon::now()->toDateString(),
+            ])
+            ->andWhere(['is not', 'external_id', null])
+            ->select(['external_id'])
+            ->createCommand()
+            ->queryColumn();
+
         /** @var Evrotel\Yii\Call[] $records */
         $records = [];
         /** @var Evrotel\Statistics\Call $call */
         foreach ($calls as $call) {
             $this->controller->stdout($call->getId() . "\t");
-            $record = Evrotel\Yii\Call::from($call);
-            if ($record->isDuplicate()) {
+
+            if (in_array($call->getId(), $storedCalls)) {
                 $this->controller->stdout("Skip\n", Console::FG_YELLOW);
                 continue;
             }
+
+            $record = Evrotel\Yii\Call::from($call);
+
             if ($this->isAuto && $record->is_auto) {
                 $clone = $record->getNotAutoClone();
                 if ($clone instanceof Evrotel\Yii\Call) {

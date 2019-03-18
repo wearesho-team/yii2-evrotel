@@ -87,7 +87,7 @@ class Call extends db\ActiveRecord
 
     public function isDuplicate(): bool
     {
-        $except = ['id', 'created_at', 'updated_at',];
+        $except = ['id', 'created_at', 'updated_at', 'external_id',];
         if (!$this->is_auto) {
             // not auto calls may duplicate auto calls
             $except[] = 'is_auto';
