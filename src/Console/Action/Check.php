@@ -57,31 +57,31 @@ class Check extends base\Action
                 Carbon::now()->toDateString(),
             ])
             ->andWhere(['is not', 'external_id', null])
-            ->select(['external_id'])
+            ->select(['external_id', 'is_auto'])
             ->createCommand()
-            ->queryColumn();
+            ->queryAll(\PDO::FETCH_KEY_PAIR);
 
         /** @var Evrotel\Yii\Call[] $records */
         $records = [];
         /** @var Evrotel\Statistics\Call $call */
         foreach ($calls as $call) {
-            $this->controller->stdout($call->getId() . "\t");
+            $id = $call->getId();
+            $this->controller->stdout($id . "\t");
 
-            if (in_array($call->getId(), $storedCalls)) {
-                $this->controller->stdout("Skip\n", Console::FG_YELLOW);
-                continue;
-            }
-
-            $record = Evrotel\Yii\Call::from($call);
-
-            if ($this->isAuto && $record->is_auto) {
-                $clone = $record->getNotAutoClone();
-                if ($clone instanceof Evrotel\Yii\Call) {
-                    $record = $clone;
-                    $clone->is_auto = true;
-                    $this->controller->stdout("Clone {$clone->id}\t", Console::FG_PURPLE);
+            if (array_key_exists($id, $storedCalls)) {
+                if ($storedCalls[$id]) {
+                    $this->controller->stdout("Skip\n", Console::FG_YELLOW);
+                    continue;
                 }
+
+                $record = Evrotel\Yii\Call::find()
+                    ->andWhere(['=', 'external_id', $id])
+                    ->one();
+                $record->is_auto = true;
+            } else {
+                $record = Evrotel\Yii\Call::from($call);
             }
+
             try {
                 /** @noinspection PhpUnhandledExceptionInspection */
                 Evrotel\Yii\Call::getDb()->transaction(function () use (
