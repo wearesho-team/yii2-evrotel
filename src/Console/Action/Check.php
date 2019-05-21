@@ -45,7 +45,7 @@ class Check extends base\Action
      */
     public function run(string $date = null)
     {
-        $date = is_string($date) ? Carbon::parse($date)->startOfDay() : Carbon::now();
+        $date = is_string($date) ? Carbon::parse($date)->startOfDay() : Carbon::today();
         $calls = $this->client->getCalls((bool)$this->isAuto, $date);
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -54,7 +54,7 @@ class Check extends base\Action
                 'between',
                 'at',
                 $date->toDateString(),
-                Carbon::now()->toDateString(),
+                Carbon::now()->toDateTimeString(),
             ])
             ->andWhere(['is not', 'external_id', null])
             ->select(['external_id', 'is_auto'])
