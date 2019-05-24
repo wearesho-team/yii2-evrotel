@@ -27,6 +27,9 @@ class Controller extends console\Controller
             'clean' => [
                 'class' => Action\Clean::class,
             ],
+            'flush' => [
+                'class' => Action\Flush::class,
+            ],
         ];
     }
 }

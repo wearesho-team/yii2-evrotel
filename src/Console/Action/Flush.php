@@ -4,28 +4,31 @@ declare(strict_types=1);
 
 namespace Wearesho\Evrotel\Yii\Console\Action;
 
+use Wearesho\Evrotel;
 use Carbon\Carbon;
-use yii\base;
 use yii\console;
 use yii\helpers;
-use Wearesho\Evrotel;
+use yii\base;
 
 /**
- * Class Clean
+ * Class Flush
  * @package Wearesho\Evrotel\Yii\Console\Action
  *
  * @property console\Controller $controller
  */
-class Clean extends base\Action
+class Flush extends base\Action
 {
     public function run(): void
     {
         $number = Evrotel\Yii\Task::updateAll([
-            'status' => Evrotel\Yii\Task::STATUS_CLOSED,
+            'status' => Evrotel\Yii\Task::STATUS_ERROR,
             'updated_at' => Carbon::now()->toDateTimeString(),
         ], [
-            'status' => Evrotel\Yii\Task::STATUS_WAITING
+            'and',
+            ['=', 'status', Evrotel\Yii\Task::STATUS_PROCESS,],
+            ['<', 'created_at', Carbon::now()->subMinutes(90)->toDateTimeString(),]
         ]);
-        $this->controller->stdout("Removed {$number} tasks" . PHP_EOL, helpers\Console::FG_GREEN);
+
+        $this->controller->stdout("Removed {$number} processing tasks." . PHP_EOL, helpers\Console::FG_GREEN);
     }
 }
