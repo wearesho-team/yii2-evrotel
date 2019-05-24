@@ -48,15 +48,14 @@ class Check extends base\Action
         $date = is_string($date) ? Carbon::parse($date)->startOfDay() : Carbon::today();
         $calls = $this->client->getCalls((bool)$this->isAuto, $date);
 
+
+        $ids = array_map(function (Evrotel\Statistics\Call $call): int {
+            return $call->getId();
+        }, $calls->getArrayCopy());
+
         /** @noinspection PhpUnhandledExceptionInspection */
         $storedCalls = Evrotel\Yii\Call::find()
-            ->andWhere([
-                'between',
-                'at',
-                $date->toDateString(),
-                Carbon::now()->toDateTimeString(),
-            ])
-            ->andWhere(['is not', 'external_id', null])
+            ->andWhere(['in', 'external_id', $ids])
             ->select(['external_id', 'is_auto'])
             ->createCommand()
             ->queryAll(\PDO::FETCH_KEY_PAIR);
@@ -69,7 +68,7 @@ class Check extends base\Action
             $this->controller->stdout($id . "\t");
 
             if (array_key_exists($id, $storedCalls)) {
-                if ($storedCalls[$id]) {
+                if ($storedCalls[$id] === $call->isAuto()) {
                     $this->controller->stdout("Skip\n", Console::FG_YELLOW);
                     continue;
                 }
@@ -77,7 +76,7 @@ class Check extends base\Action
                 $record = Evrotel\Yii\Call::find()
                     ->andWhere(['=', 'external_id', $id])
                     ->one();
-                $record->is_auto = true;
+                $record->is_auto = $call->isAuto();
             } else {
                 $record = Evrotel\Yii\Call::from($call);
             }
@@ -102,7 +101,11 @@ class Check extends base\Action
             }
 
             $records[] = $record;
-            $this->controller->stdout("Save\n", Console::FG_GREEN);
+            $this->controller->stdout(
+                $record->is_auto ? "AUTO" : "MANUAL",
+                $record->is_auto ? Console::FG_YELLOW : Console::FG_CYAN
+            );
+            $this->controller->stdout(" Save\n", Console::FG_GREEN);
         }
         $this->controller->stdout("Saved " . count($records) . " calls\n");
     }
