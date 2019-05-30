@@ -51,7 +51,7 @@ class CreateJobs extends base\Action
         $tasks = Evrotel\Yii\Task::find()
             ->withoutJobs()
             ->andWhere(['=', 'evrotel_task.status', Evrotel\Yii\Task::STATUS_WAITING])
-            ->andWhere(['>', 'evrotel_task.created_at', Carbon::now()->toDateString()])
+            ->andWhere(['>', 'evrotel_task.created_at', Carbon::today()->toDateString()])
             ->andAtReached()
             ->orderBy(['id' => SORT_ASC])
             ->limit($this->getAvailableChannelsCount())
