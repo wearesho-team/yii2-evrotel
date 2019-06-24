@@ -21,7 +21,7 @@
     "php": ">=7.2",
     "horat1us/yii2-base": "^1.14",
     "nesbot/carbon": "^1.27",
-    "wearesho-team/evrotel": "^4.0",
+    "wearesho-team/evrotel": "^4.0 | ^5.0",
     "wearesho-team/yii2-filesystem": "^4.2",
     "yiisoft/yii2": "^2.0.15",
     "yiisoft/yii2-queue": "^2.1"
