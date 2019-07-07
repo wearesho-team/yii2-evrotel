@@ -2,7 +2,6 @@
 
 namespace Wearesho\Evrotel\Yii\Console\Job;
 
-use Carbon\Carbon;
 use Horat1us\Yii\Exceptions\ModelException;
 use Wearesho\Evrotel;
 use yii\di;
@@ -51,10 +50,15 @@ class Dial extends Evrotel\Yii\Console\Job
             Evrotel\AutoDial\Disposition::CONGESTION,
             Evrotel\AutoDial\Disposition::NONE,
         ]);
+        $shouldBeClosed = in_array($disposition, [
+            Evrotel\AutoDial\Disposition::GOOD,
+            Evrotel\AutoDial\Disposition::ANSWER,
+        ]);
+
         if ($shouldBeReDialed) {
             $task->isRepeatable() && $task->repeat();
             $task->status = Evrotel\Yii\Task::STATUS_ERROR;
-        } elseif ($disposition === Evrotel\AutoDial\Disposition::ANSWER) {
+        } elseif ($shouldBeClosed) {
             sleep(20); // wait call to end
             $task->status = Evrotel\Yii\Task::STATUS_CLOSED;
         } elseif ($task->isRepeatable()) {
