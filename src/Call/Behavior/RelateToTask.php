@@ -44,6 +44,7 @@ class RelateToTask extends Evrotel\Yii\Call\Behavior
             'call' => $call,
             'task' => $task,
         ]);
+        /** @noinspection PhpUnhandledExceptionInspection */
         ModelException::saveOrThrow($relation);
 
         $task->populateRelation('call', $call);
@@ -63,6 +64,10 @@ class RelateToTask extends Evrotel\Yii\Call\Behavior
             && $call->is_auto;
 
         if (!$isAutoChanged) {
+            return;
+        }
+
+        if (!is_null($call->task)) {
             return;
         }
 
